@@ -20,7 +20,7 @@ fn wrong_bubble_sort(arr: &mut [u32], n: usize) {
 
 #[cfg(kani)]
 #[kani::proof]
-#[kani::unwind(10)]
+#[kani::unwind(6)]
 fn check_bubble_sort() {
     const LIMIT: usize = 5;
 
