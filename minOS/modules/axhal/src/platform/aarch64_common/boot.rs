@@ -89,13 +89,6 @@ unsafe fn init_mmu() {
     barrier::isb(barrier::SY);
 }
 
-unsafe fn enable_fp() {
-    if cfg!(feature = "fp_simd") {
-        CPACR_EL1.write(CPACR_EL1::FPEN::TrapNothing);
-        barrier::isb(barrier::SY);
-    }
-}
-
 unsafe fn init_boot_page_table() {
     crate::platform::mem::init_boot_page_table(addr_of_mut!(BOOT_PT_L0), addr_of_mut!(BOOT_PT_L1));
 }
@@ -117,7 +110,6 @@ unsafe extern "C" fn _start() -> ! {
         mov     sp, x8
 
         bl      {switch_to_el1}         // switch to EL1
-        bl      {enable_fp}             // enable fp/neon
         bl      {init_boot_page_table}
         bl      {init_mmu}              // setup MMU
 
@@ -132,7 +124,6 @@ unsafe extern "C" fn _start() -> ! {
         switch_to_el1 = sym switch_to_el1,
         init_boot_page_table = sym init_boot_page_table,
         init_mmu = sym init_mmu,
-        enable_fp = sym enable_fp,
         boot_stack = sym BOOT_STACK,
         boot_stack_size = const TASK_STACK_SIZE,
         phys_virt_offset = const axconfig::PHYS_VIRT_OFFSET,
@@ -154,7 +145,6 @@ unsafe extern "C" fn _start_secondary() -> ! {
         mov     sp, x0
         bl      {switch_to_el1}
         bl      {init_mmu}
-        bl      {enable_fp}
 
         mov     x8, {phys_virt_offset}  // set SP to the high address
         add     sp, sp, x8
@@ -165,7 +155,6 @@ unsafe extern "C" fn _start_secondary() -> ! {
         b      .",
         switch_to_el1 = sym switch_to_el1,
         init_mmu = sym init_mmu,
-        enable_fp = sym enable_fp,
         phys_virt_offset = const axconfig::PHYS_VIRT_OFFSET,
         entry = sym crate::platform::rust_entry_secondary,
         options(noreturn),

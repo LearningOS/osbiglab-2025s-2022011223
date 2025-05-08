@@ -82,27 +82,6 @@ pub struct ExtendedState {
     pub fxsave_area: FxsaveArea,
 }
 
-#[cfg(feature = "fp_simd")]
-impl ExtendedState {
-    #[inline]
-    fn save(&mut self) {
-        unsafe { core::arch::x86_64::_fxsave64(&mut self.fxsave_area as *mut _ as *mut u8) }
-    }
-
-    #[inline]
-    fn restore(&self) {
-        unsafe { core::arch::x86_64::_fxrstor64(&self.fxsave_area as *const _ as *const u8) }
-    }
-
-    const fn default() -> Self {
-        let mut area: FxsaveArea = unsafe { core::mem::MaybeUninit::zeroed().assume_init() };
-        area.fcw = 0x37f;
-        area.ftw = 0xffff;
-        area.mxcsr = 0x1f80;
-        Self { fxsave_area: area }
-    }
-}
-
 impl fmt::Debug for ExtendedState {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("ExtendedState")
@@ -138,9 +117,6 @@ pub struct TaskContext {
     pub rsp: u64,
     /// Thread Local Storage (TLS).
     pub fs_base: usize,
-    /// Extended states, i.e., FP/SIMD states.
-    #[cfg(feature = "fp_simd")]
-    pub ext_state: ExtendedState,
 }
 
 impl TaskContext {
@@ -150,8 +126,6 @@ impl TaskContext {
             kstack_top: va!(0),
             rsp: 0,
             fs_base: 0,
-            #[cfg(feature = "fp_simd")]
-            ext_state: ExtendedState::default(),
         }
     }
 
@@ -182,16 +156,6 @@ impl TaskContext {
     /// It first saves the current task's context from CPU to this place, and then
     /// restores the next task's context from `next_ctx` to CPU.
     pub fn switch_to(&mut self, next_ctx: &Self) {
-        #[cfg(feature = "fp_simd")]
-        {
-            self.ext_state.save();
-            next_ctx.ext_state.restore();
-        }
-        #[cfg(feature = "tls")]
-        {
-            self.fs_base = super::read_thread_pointer();
-            unsafe { super::write_thread_pointer(next_ctx.fs_base) };
-        }
         unsafe { context_switch(&mut self.rsp, &next_ctx.rsp) }
     }
 }

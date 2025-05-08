@@ -12,7 +12,6 @@ documentation = "https://arceos-org.github.io/arceos/axhal/index.html"
 [features]
 smp = []
 alloc = []
-fp_simd = []
 paging = ["axalloc", "page_table_multiarch"]
 irq = []
 uspace = ["paging"]

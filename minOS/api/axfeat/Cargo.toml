@@ -13,10 +13,7 @@ documentation = "https://arceos-org.github.io/arceos/axfeat/index.html"
 default = []
 
 # Multicore
-smp = ["axhal/smp", "axruntime/smp", "kspin/smp"]
-
-# Floating point/SIMD
-fp_simd = ["axhal/fp_simd"]
+smp = ["kspin/smp"]
 
 # Interrupts
 irq = ["axhal/irq", "axruntime/irq"]
