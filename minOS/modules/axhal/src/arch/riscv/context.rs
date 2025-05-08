@@ -166,11 +166,6 @@ impl TaskContext {
     /// It first saves the current task's context from CPU to this place, and then
     /// restores the next task's context from `next_ctx` to CPU.
     pub fn switch_to(&mut self, next_ctx: &Self) {
-        #[cfg(feature = "tls")]
-        {
-            self.tp = super::read_thread_pointer();
-            unsafe { super::write_thread_pointer(next_ctx.tp) };
-        }
         #[cfg(feature = "uspace")]
         unsafe {
             if self.satp != next_ctx.satp {

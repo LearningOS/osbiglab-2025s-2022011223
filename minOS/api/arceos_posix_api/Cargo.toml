@@ -20,7 +20,6 @@ documentation = "https://arceos-org.github.io/arceos/arceos_posix_api/index.html
 default = []
 
 smp = ["axfeat/smp"]
-irq = ["axfeat/irq"]
 alloc = ["dep:axalloc", "axfeat/alloc"]
 fd = ["alloc"]
 pipe = ["fd"]

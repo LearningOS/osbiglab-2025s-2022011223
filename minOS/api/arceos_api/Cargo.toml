@@ -12,7 +12,6 @@ documentation = "https://arceos-org.github.io/arceos/arceos_api/index.html"
 [features]
 default = []
 
-irq = ["axfeat/irq"]
 alloc = ["dep:axalloc", "axfeat/alloc"]
 alt_alloc = ["dep:alt_axalloc", "axfeat/alt_alloc"]
 paging = ["dep:axmm", "axfeat/paging"]

@@ -3,11 +3,6 @@ pub mod mem;
 #[cfg(feature = "smp")]
 pub mod mp;
 
-#[cfg(feature = "irq")]
-pub mod irq {
-    pub use crate::platform::aarch64_common::gic::*;
-}
-
 pub mod console {
     pub use crate::platform::aarch64_common::pl011::*;
 }
@@ -54,8 +49,6 @@ pub(crate) unsafe extern "C" fn rust_entry_secondary(cpu_id: usize) {
 ///
 /// For example, the interrupt controller and the timer.
 pub fn platform_init() {
-    #[cfg(feature = "irq")]
-    super::aarch64_common::gic::init_primary();
     super::aarch64_common::generic_timer::init_percpu();
     super::aarch64_common::pl011::init();
 }
@@ -63,7 +56,5 @@ pub fn platform_init() {
 /// Initializes the platform devices for secondary CPUs.
 #[cfg(feature = "smp")]
 pub fn platform_init_secondary() {
-    #[cfg(feature = "irq")]
-    super::aarch64_common::gic::init_secondary();
     super::aarch64_common::generic_timer::init_percpu();
 }

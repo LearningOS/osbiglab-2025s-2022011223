@@ -49,9 +49,6 @@ pub mod cpu;
 pub mod mem;
 pub mod time;
 
-#[cfg(feature = "irq")]
-pub mod irq;
-
 #[cfg(feature = "paging")]
 pub mod paging;
 

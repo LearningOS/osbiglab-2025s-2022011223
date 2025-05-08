@@ -184,7 +184,6 @@ dependencies = [
  "dw_apb_uart",
  "handler_table",
  "int_ratio",
- "kernel_guard",
  "kspin",
  "lazyinit",
  "linkme",
@@ -253,7 +252,6 @@ dependencies = [
  "axmm",
  "chrono",
  "crate_interface",
- "kernel_guard",
  "percpu",
 ]
 

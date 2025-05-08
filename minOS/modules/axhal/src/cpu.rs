@@ -36,7 +36,6 @@ pub fn current_task_ptr<T>() -> *const T {
     #[cfg(any(target_arch = "riscv32", target_arch = "riscv64"))]
     unsafe {
         // on RISC-V, reading `CURRENT_TASK_PTR` requires multiple instruction, so we disable local IRQs.
-        let _guard = kernel_guard::IrqSave::new();
         CURRENT_TASK_PTR.read_current_raw() as _
     }
     #[cfg(target_arch = "aarch64")]
@@ -63,7 +62,6 @@ pub unsafe fn set_current_task_ptr<T>(ptr: *const T) {
     }
     #[cfg(any(target_arch = "riscv32", target_arch = "riscv64"))]
     {
-        let _guard = kernel_guard::IrqSave::new();
         CURRENT_TASK_PTR.write_current_raw(ptr as usize)
     }
     #[cfg(target_arch = "aarch64")]

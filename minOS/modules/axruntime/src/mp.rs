@@ -50,9 +50,6 @@ pub extern "C" fn rust_main_secondary(cpu_id: usize) -> ! {
     #[cfg(feature = "irq")]
     axhal::arch::enable_irqs();
 
-    #[cfg(feature = "tls")]
-    super::init_tls();
-
     loop {
         axhal::arch::wait_for_irqs();
     }
