@@ -8,12 +8,8 @@ pub mod time;
 
 #[cfg(feature = "fd")]
 pub mod fd_ops;
-#[cfg(feature = "fs")]
-pub mod fs;
 #[cfg(any(feature = "select", feature = "epoll"))]
 pub mod io_mpx;
-#[cfg(feature = "net")]
-pub mod net;
 #[cfg(feature = "pipe")]
 pub mod pipe;
 #[cfg(feature = "multitask")]

@@ -28,7 +28,6 @@ alloc-slab = ["axalloc/slab"]
 alloc-buddy = ["axalloc/buddy"]
 paging = ["alloc", "axhal/paging", "axruntime/paging"]
 tls = ["alloc", "axhal/tls", "axruntime/tls"]
-dma = ["alloc", "paging"]
 
 alt_alloc = ["alt_axalloc", "axruntime/alt_alloc"]
 

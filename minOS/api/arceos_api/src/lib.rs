@@ -10,8 +10,6 @@
 #[cfg(any(
     feature = "alloc",
     feature = "fs",
-    feature = "net",
-    feature = "multitask",
     feature = "dummy-if-not-enabled"
 ))]
 extern crate alloc;
@@ -73,32 +71,6 @@ pub mod mem {
         /// This function is unsafe because it requires users to manually manage
         /// the buffer life cycle.
         pub unsafe fn ax_dealloc(ptr: NonNull<u8>, layout: Layout);
-    }
-
-    define_api_type! {
-        @cfg "dma";
-        pub type DMAInfo;
-    }
-
-    define_api! {
-        @cfg "dma";
-        /// Allocates **coherent** memory that meets Direct Memory Access (DMA)
-        /// requirements.
-        ///
-        /// Returns [`None`] if the allocation fails.
-        ///
-        /// # Safety
-        ///
-        /// This function is unsafe because it requires users to manually manage
-        /// the buffer life cycle.
-        pub unsafe fn ax_alloc_coherent(layout: Layout) -> Option<DMAInfo>;
-        /// Deallocates coherent memory previously allocated.
-        ///
-        /// # Safety
-        ///
-        /// This function is unsafe because it requires users to manually manage
-        /// the buffer life cycle.
-        pub unsafe fn ax_dealloc_coherent(dma: DMAInfo, layout: Layout);
     }
 }
 
@@ -257,101 +229,6 @@ pub mod fs {
     }
 }
 
-/// Networking primitives for TCP/UDP communication.
-pub mod net {
-    use crate::{io::AxPollState, AxResult};
-    use core::net::{IpAddr, SocketAddr};
-
-    define_api_type! {
-        @cfg "net";
-        pub type AxTcpSocketHandle;
-        pub type AxUdpSocketHandle;
-    }
-
-    define_api! {
-        @cfg "net";
-
-        // TCP socket
-
-        /// Creates a new TCP socket.
-        pub fn ax_tcp_socket() -> AxTcpSocketHandle;
-        /// Returns the local address and port of the TCP socket.
-        pub fn ax_tcp_socket_addr(socket: &AxTcpSocketHandle) -> AxResult<SocketAddr>;
-        /// Returns the remote address and port of the TCP socket.
-        pub fn ax_tcp_peer_addr(socket: &AxTcpSocketHandle) -> AxResult<SocketAddr>;
-        /// Moves this TCP socket into or out of nonblocking mode.
-        pub fn ax_tcp_set_nonblocking(socket: &AxTcpSocketHandle, nonblocking: bool) -> AxResult;
-
-        /// Connects the TCP socket to the given address and port.
-        pub fn ax_tcp_connect(handle: &AxTcpSocketHandle, addr: SocketAddr) -> AxResult;
-        /// Binds the TCP socket to the given address and port.
-        pub fn ax_tcp_bind(socket: &AxTcpSocketHandle, addr: SocketAddr) -> AxResult;
-        /// Starts listening on the bound address and port.
-        pub fn ax_tcp_listen(socket: &AxTcpSocketHandle, _backlog: usize) -> AxResult;
-        /// Accepts a new connection on the TCP socket.
-        ///
-        /// This function will block the calling thread until a new TCP connection
-        /// is established. When established, a new TCP socket is returned.
-        pub fn ax_tcp_accept(socket: &AxTcpSocketHandle) -> AxResult<(AxTcpSocketHandle, SocketAddr)>;
-
-        /// Transmits data in the given buffer on the TCP socket.
-        pub fn ax_tcp_send(socket: &AxTcpSocketHandle, buf: &[u8]) -> AxResult<usize>;
-        /// Receives data on the TCP socket, and stores it in the given buffer.
-        /// On success, returns the number of bytes read.
-        pub fn ax_tcp_recv(socket: &AxTcpSocketHandle, buf: &mut [u8]) -> AxResult<usize>;
-        /// Returns whether the TCP socket is readable or writable.
-        pub fn ax_tcp_poll(socket: &AxTcpSocketHandle) -> AxResult<AxPollState>;
-        /// Closes the connection on the TCP socket.
-        pub fn ax_tcp_shutdown(socket: &AxTcpSocketHandle) -> AxResult;
-
-        // UDP socket
-
-        /// Creates a new UDP socket.
-        pub fn ax_udp_socket() -> AxUdpSocketHandle;
-        /// Returns the local address and port of the UDP socket.
-        pub fn ax_udp_socket_addr(socket: &AxUdpSocketHandle) -> AxResult<SocketAddr>;
-        /// Returns the remote address and port of the UDP socket.
-        pub fn ax_udp_peer_addr(socket: &AxUdpSocketHandle) -> AxResult<SocketAddr>;
-        /// Moves this UDP socket into or out of nonblocking mode.
-        pub fn ax_udp_set_nonblocking(socket: &AxUdpSocketHandle, nonblocking: bool) -> AxResult;
-
-        /// Binds the UDP socket to the given address and port.
-        pub fn ax_udp_bind(socket: &AxUdpSocketHandle, addr: SocketAddr) -> AxResult;
-        /// Receives a single datagram message on the UDP socket.
-        pub fn ax_udp_recv_from(socket: &AxUdpSocketHandle, buf: &mut [u8]) -> AxResult<(usize, SocketAddr)>;
-        /// Receives a single datagram message on the UDP socket, without
-        /// removing it from the queue.
-        pub fn ax_udp_peek_from(socket: &AxUdpSocketHandle, buf: &mut [u8]) -> AxResult<(usize, SocketAddr)>;
-        /// Sends data on the UDP socket to the given address. On success,
-        /// returns the number of bytes written.
-        pub fn ax_udp_send_to(socket: &AxUdpSocketHandle, buf: &[u8], addr: SocketAddr) -> AxResult<usize>;
-
-        /// Connects this UDP socket to a remote address, allowing the `send` and
-        /// `recv` to be used to send data and also applies filters to only receive
-        /// data from the specified address.
-        pub fn ax_udp_connect(socket: &AxUdpSocketHandle, addr: SocketAddr) -> AxResult;
-        /// Sends data on the UDP socket to the remote address to which it is
-        /// connected.
-        pub fn ax_udp_send(socket: &AxUdpSocketHandle, buf: &[u8]) -> AxResult<usize>;
-        /// Receives a single datagram message on the UDP socket from the remote
-        /// address to which it is connected. On success, returns the number of
-        /// bytes read.
-        pub fn ax_udp_recv(socket: &AxUdpSocketHandle, buf: &mut [u8]) -> AxResult<usize>;
-        /// Returns whether the UDP socket is readable or writable.
-        pub fn ax_udp_poll(socket: &AxUdpSocketHandle) -> AxResult<AxPollState>;
-
-        // Miscellaneous
-
-        /// Resolves the host name to a list of IP addresses.
-        pub fn ax_dns_query(domain_name: &str) -> AxResult<alloc::vec::Vec<IpAddr>>;
-        /// Poll the network stack.
-        ///
-        /// It may receive packets from the NIC and process them, and transmit queued
-        /// packets to the NIC.
-        pub fn ax_poll_interfaces() -> AxResult;
-    }
-}
-
 /// Graphics manipulation operations.
 pub mod display {
     define_api_type! {
@@ -387,18 +264,6 @@ pub mod modules {
 
     #[cfg(feature = "alloc")]
     pub use axalloc;
-    #[cfg(feature = "display")]
-    pub use axdisplay;
-    #[cfg(feature = "dma")]
-    pub use axdma;
-    #[cfg(any(feature = "fs", feature = "net", feature = "display"))]
-    pub use axdriver;
-    #[cfg(feature = "fs")]
-    pub use axfs;
     #[cfg(feature = "paging")]
     pub use axmm;
-    #[cfg(feature = "net")]
-    pub use axnet;
-    #[cfg(feature = "multitask")]
-    pub use axtask;
 }

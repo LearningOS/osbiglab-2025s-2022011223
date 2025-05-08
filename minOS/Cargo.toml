@@ -8,7 +8,6 @@ members = [
     "modules/axhal",
     "modules/axlog",
     "modules/axmm",
-    "modules/axdma",
     "modules/axruntime",
     "modules/bump_allocator",
 
@@ -49,7 +48,6 @@ axhal = { path = "modules/axhal" }
 axlog = { path = "modules/axlog" }
 axmm = { path = "modules/axmm" }
 axruntime = { path = "modules/axruntime" }
-axdma = { path = "modules/axdma" }
 
 [profile.release]
 lto = true

@@ -89,22 +89,6 @@ macro_rules! cfg_alloc {
     ($($item:item)*) => { _cfg_common!{ "alloc" $($item)* } }
 }
 
-macro_rules! cfg_dma {
-    ($($item:item)*) => { _cfg_common!{ "dma" $($item)* } }
-}
-
-macro_rules! cfg_fs {
-    ($($item:item)*) => { _cfg_common!{ "fs" $($item)* } }
-}
-
-macro_rules! cfg_net {
-    ($($item:item)*) => { _cfg_common!{ "net" $($item)* } }
-}
-
-macro_rules! cfg_display {
-    ($($item:item)*) => { _cfg_common!{ "display" $($item)* } }
-}
-
 macro_rules! cfg_task {
     ($($item:item)*) => { _cfg_common!{ "multitask" $($item)* } }
 }

@@ -66,7 +66,6 @@ dependencies = [
  "alt_axalloc",
  "axalloc",
  "axconfig",
- "axdma",
  "axerrno",
  "axfeat",
  "axhal",
@@ -146,21 +145,6 @@ version = "0.1.0"
 dependencies = [
  "serde",
  "toml_edit",
-]
-
-[[package]]
-name = "axdma"
-version = "0.1.0"
-dependencies = [
- "allocator",
- "axalloc",
- "axconfig",
- "axerrno",
- "axhal",
- "axmm",
- "kspin",
- "log",
- "memory_addr",
 ]
 
 [[package]]

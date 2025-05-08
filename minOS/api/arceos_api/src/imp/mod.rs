@@ -1,21 +1,6 @@
 mod mem;
 mod task;
 
-cfg_fs! {
-    mod fs;
-    pub use fs::*;
-}
-
-cfg_net! {
-    mod net;
-    pub use net::*;
-}
-
-cfg_display! {
-    mod display;
-    pub use display::*;
-}
-
 mod stdio {
     use core::fmt;
 
