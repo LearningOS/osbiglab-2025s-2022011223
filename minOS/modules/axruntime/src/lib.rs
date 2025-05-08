@@ -139,12 +139,6 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
     #[cfg(feature = "smp")]
     self::mp::start_secondary_cpus(cpu_id);
 
-    #[cfg(feature = "irq")]
-    {
-        info!("Initialize interrupt handlers...");
-        init_interrupt();
-    }
-
     info!("Primary CPU {} init OK.", cpu_id);
     INITED_CPUS.fetch_add(1, Ordering::Relaxed);
 
@@ -214,34 +208,4 @@ fn init_allocator() {
                 .expect("add heap memory region failed");
         }
     }
-}
-
-#[cfg(feature = "irq")]
-fn init_interrupt() {
-    use axhal::time::TIMER_IRQ_NUM;
-
-    // Setup timer interrupt handler
-    const PERIODIC_INTERVAL_NANOS: u64 =
-        axhal::time::NANOS_PER_SEC / axconfig::TICKS_PER_SEC as u64;
-
-    #[percpu::def_percpu]
-    static NEXT_DEADLINE: u64 = 0;
-
-    fn update_timer() {
-        let now_ns = axhal::time::monotonic_time_nanos();
-        // Safety: we have disabled preemption in IRQ handler.
-        let mut deadline = unsafe { NEXT_DEADLINE.read_current_raw() };
-        if now_ns >= deadline {
-            deadline = now_ns + PERIODIC_INTERVAL_NANOS;
-        }
-        unsafe { NEXT_DEADLINE.write_current_raw(deadline + PERIODIC_INTERVAL_NANOS) };
-        axhal::time::set_oneshot_timer(deadline);
-    }
-
-    axhal::irq::register_handler(TIMER_IRQ_NUM, || {
-        update_timer();
-    });
-
-    // Enable IRQs before starting app
-    axhal::arch::enable_irqs();
 }
