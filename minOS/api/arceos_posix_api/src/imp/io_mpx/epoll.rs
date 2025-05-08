@@ -188,18 +188,7 @@ pub unsafe fn sys_epoll_wait(
             (!timeout.is_negative()).then(|| wall_time() + Duration::from_millis(timeout as u64));
         let epoll_instance = EpollInstance::from_fd(epfd)?;
         loop {
-            #[cfg(feature = "net")]
-            axnet::poll_interfaces();
-            let events_num = epoll_instance.poll_all(events)?;
-            if events_num > 0 {
-                return Ok(events_num as c_int);
-            }
-
-            if deadline.map_or(false, |ddl| wall_time() >= ddl) {
-                debug!("    timeout!");
-                return Ok(0);
-            }
-            crate::sys_sched_yield();
+            
         }
     })
 }

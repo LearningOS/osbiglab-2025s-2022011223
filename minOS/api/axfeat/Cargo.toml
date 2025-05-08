@@ -27,12 +27,8 @@ alloc-tlsf = ["axalloc/tlsf"]
 alloc-slab = ["axalloc/slab"]
 alloc-buddy = ["axalloc/buddy"]
 paging = ["alloc", "axhal/paging", "axruntime/paging"]
-tls = ["alloc", "axhal/tls", "axruntime/tls"]
 
 alt_alloc = ["alt_axalloc", "axruntime/alt_alloc"]
-
-# Real Time Clock (RTC) Driver.
-rtc = ["axhal/rtc", "axruntime/rtc"]
 
 # Logging
 log-level-off = ["axlog/log-level-off"]

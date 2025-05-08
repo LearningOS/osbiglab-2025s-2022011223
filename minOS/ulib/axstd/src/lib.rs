@@ -63,7 +63,6 @@ pub use core::{arch, cell, cmp, hint, marker, mem, ops, ptr, slice, str};
 #[macro_use]
 mod macros;
 
-pub mod env;
 pub mod io;
 pub mod os;
 pub mod process;

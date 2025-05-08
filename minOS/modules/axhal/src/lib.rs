@@ -49,9 +49,6 @@ pub mod cpu;
 pub mod mem;
 pub mod time;
 
-#[cfg(feature = "tls")]
-pub mod tls;
-
 #[cfg(feature = "irq")]
 pub mod irq;
 

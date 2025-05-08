@@ -9,7 +9,6 @@
 
 #[cfg(any(
     feature = "alloc",
-    feature = "fs",
     feature = "dummy-if-not-enabled"
 ))]
 extern crate alloc;
@@ -141,107 +140,6 @@ pub mod task {
         /// The maximum number of tasks to wake up is specified by `count`. If
         /// `count` is `u32::MAX`, it will wake up all tasks in the wait queue.
         pub fn ax_wait_queue_wake(wq: &AxWaitQueueHandle, count: u32);
-    }
-}
-
-/// Filesystem manipulation operations.
-pub mod fs {
-    use crate::AxResult;
-
-    define_api_type! {
-        @cfg "fs";
-        pub type AxFileHandle;
-        pub type AxDirHandle;
-        pub type AxOpenOptions;
-        pub type AxFileAttr;
-        pub type AxFileType;
-        pub type AxFilePerm;
-        pub type AxDirEntry;
-        pub type AxSeekFrom;
-        #[cfg(feature = "myfs")]
-        pub type AxDisk;
-        #[cfg(feature = "myfs")]
-        pub type MyFileSystemIf;
-    }
-
-    define_api! {
-        @cfg "fs";
-
-        /// Opens a file at the path relative to the current directory with the
-        /// options specified by `opts`.
-        pub fn ax_open_file(path: &str, opts: &AxOpenOptions) -> AxResult<AxFileHandle>;
-        /// Opens a directory at the path relative to the current directory with
-        /// the options specified by `opts`.
-        pub fn ax_open_dir(path: &str, opts: &AxOpenOptions) -> AxResult<AxDirHandle>;
-
-        /// Reads the file at the current position, returns the number of bytes read.
-        ///
-        /// After the read, the cursor will be advanced by the number of bytes read.
-        pub fn ax_read_file(file: &mut AxFileHandle, buf: &mut [u8]) -> AxResult<usize>;
-        /// Reads the file at the given position, returns the number of bytes read.
-        ///
-        /// It does not update the file cursor.
-        pub fn ax_read_file_at(file: &AxFileHandle, offset: u64, buf: &mut [u8]) -> AxResult<usize>;
-        /// Writes the file at the current position, returns the number of bytes
-        /// written.
-        ///
-        /// After the write, the cursor will be advanced by the number of bytes
-        /// written.
-        pub fn ax_write_file(file: &mut AxFileHandle, buf: &[u8]) -> AxResult<usize>;
-        /// Writes the file at the given position, returns the number of bytes
-        /// written.
-        ///
-        /// It does not update the file cursor.
-        pub fn ax_write_file_at(file: &AxFileHandle, offset: u64, buf: &[u8]) -> AxResult<usize>;
-        /// Truncates the file to the specified size.
-        pub fn ax_truncate_file(file: &AxFileHandle, size: u64) -> AxResult;
-        /// Flushes the file, writes all buffered data to the underlying device.
-        pub fn ax_flush_file(file: &AxFileHandle) -> AxResult;
-        /// Sets the cursor of the file to the specified offset. Returns the new
-        /// position after the seek.
-        pub fn ax_seek_file(file: &mut AxFileHandle, pos: AxSeekFrom) -> AxResult<u64>;
-        /// Returns attributes of the file.
-        pub fn ax_file_attr(file: &AxFileHandle) -> AxResult<AxFileAttr>;
-
-        /// Reads directory entries starts from the current position into the
-        /// given buffer, returns the number of entries read.
-        ///
-        /// After the read, the cursor of the directory will be advanced by the
-        /// number of entries read.
-        pub fn ax_read_dir(dir: &mut AxDirHandle, dirents: &mut [AxDirEntry]) -> AxResult<usize>;
-        /// Creates a new, empty directory at the provided path.
-        pub fn ax_create_dir(path: &str) -> AxResult;
-        /// Removes an empty directory.
-        ///
-        /// If the directory is not empty, it will return an error.
-        pub fn ax_remove_dir(path: &str) -> AxResult;
-        /// Removes a file from the filesystem.
-        pub fn ax_remove_file(path: &str) -> AxResult;
-        /// Rename a file or directory to a new name.
-        ///
-        /// It will delete the original file if `old` already exists.
-        pub fn ax_rename(old: &str, new: &str) -> AxResult;
-
-        /// Returns the current working directory.
-        pub fn ax_current_dir() -> AxResult<alloc::string::String>;
-        /// Changes the current working directory to the specified path.
-        pub fn ax_set_current_dir(path: &str) -> AxResult;
-    }
-}
-
-/// Graphics manipulation operations.
-pub mod display {
-    define_api_type! {
-        @cfg "display";
-        pub type AxDisplayInfo;
-    }
-
-    define_api! {
-        @cfg "display";
-        /// Gets the framebuffer information.
-        pub fn ax_framebuffer_info() -> AxDisplayInfo;
-        /// Flushes the framebuffer, i.e. show on the screen.
-        pub fn ax_framebuffer_flush();
     }
 }
 

@@ -14,12 +14,9 @@ default = []
 
 smp = ["axhal/smp"]
 irq = ["axhal/irq", "percpu", "kernel_guard"]
-tls = ["axhal/tls"]
 alloc = ["axalloc"]
 alt_alloc = ["alt_axalloc"]
 paging = ["axhal/paging", "axmm"]
-
-rtc = []
 
 [dependencies]
 axhal = { workspace = true }
