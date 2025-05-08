@@ -1,0 +1,35 @@
+[package]
+name = "arceos_api"
+version.workspace = true
+edition = "2021"
+authors = ["Yuekai Jia <equation618@gmail.com>"]
+description = "Public APIs and types for ArceOS modules"
+license.workspace = true
+homepage.workspace = true
+repository = "https://github.com/arceos-org/arceos/tree/main/api/arceos_api"
+documentation = "https://arceos-org.github.io/arceos/arceos_api/index.html"
+
+[features]
+default = []
+
+irq = ["axfeat/irq"]
+alloc = ["dep:axalloc", "axfeat/alloc"]
+alt_alloc = ["dep:alt_axalloc", "axfeat/alt_alloc"]
+paging = ["dep:axmm", "axfeat/paging"]
+dma = ["dep:axdma", "axfeat/dma"]
+
+# Use dummy functions if the feature is not enabled
+dummy-if-not-enabled = []
+
+[dependencies]
+axio = "0.1"
+axerrno = "0.1"
+axfeat = { workspace = true }
+axruntime = { workspace = true }
+axconfig = { workspace = true }
+axlog = { workspace = true }
+axhal = { workspace = true }
+axalloc = { workspace = true, optional = true }
+alt_axalloc = { workspace = true, optional = true }
+axmm = { workspace = true, optional = true }
+axdma = { workspace = true, optional = true }
