@@ -73,9 +73,6 @@ pub unsafe fn sys_nanosleep(req: *const ctypes::timespec, rem: *mut ctypes::time
 
         let now = axhal::time::monotonic_time();
 
-        #[cfg(feature = "multitask")]
-        axtask::sleep(dur);
-        #[cfg(not(feature = "multitask"))]
         axhal::time::busy_wait(dur);
 
         let after = axhal::time::monotonic_time();

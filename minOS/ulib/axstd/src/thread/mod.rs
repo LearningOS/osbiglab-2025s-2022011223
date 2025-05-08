@@ -1,10 +1,5 @@
 //! Native threads.
 
-#[cfg(feature = "multitask")]
-mod multi;
-#[cfg(feature = "multitask")]
-pub use multi::*;
-
 use arceos_api::task as api;
 
 /// Current thread gives up the CPU time voluntarily, and switches to another

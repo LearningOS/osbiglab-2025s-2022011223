@@ -12,5 +12,3 @@ pub mod fd_ops;
 pub mod io_mpx;
 #[cfg(feature = "pipe")]
 pub mod pipe;
-#[cfg(feature = "multitask")]
-pub mod pthread;

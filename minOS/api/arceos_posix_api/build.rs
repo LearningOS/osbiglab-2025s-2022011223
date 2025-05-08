@@ -3,15 +3,7 @@ fn main() {
 
     fn gen_pthread_mutex(out_file: &str) -> std::io::Result<()> {
         // TODO: generate size and initial content automatically.
-        let (mutex_size, mutex_init) = if cfg!(feature = "multitask") {
-            if cfg!(feature = "smp") {
-                (6, "{0, 0, 8, 0, 0, 0}") // core::mem::transmute::<_, [usize; 6]>(axsync::Mutex::new(()))
-            } else {
-                (5, "{0, 8, 0, 0, 0}") // core::mem::transmute::<_, [usize; 5]>(axsync::Mutex::new(()))
-            }
-        } else {
-            (1, "{0}")
-        };
+        let (mutex_size, mutex_init) = (1, "{0}");
 
         let mut output = Vec::new();
         writeln!(

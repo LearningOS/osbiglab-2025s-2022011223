@@ -44,9 +44,3 @@ pub use imp::io_mpx::sys_select;
 pub use imp::io_mpx::{sys_epoll_create, sys_epoll_ctl, sys_epoll_wait};
 #[cfg(feature = "pipe")]
 pub use imp::pipe::sys_pipe;
-#[cfg(feature = "multitask")]
-pub use imp::pthread::mutex::{
-    sys_pthread_mutex_init, sys_pthread_mutex_lock, sys_pthread_mutex_unlock,
-};
-#[cfg(feature = "multitask")]
-pub use imp::pthread::{sys_pthread_create, sys_pthread_exit, sys_pthread_join, sys_pthread_self};

@@ -88,12 +88,6 @@ pub mod stdio {
 
 /// Multi-threading management.
 pub mod task {
-    define_api_type! {
-        @cfg "multitask";
-        pub type AxTaskHandle;
-        pub type AxWaitQueueHandle;
-    }
-
     define_api! {
         /// Current task is going to sleep, it will be woken up at the given deadline.
         ///
@@ -108,38 +102,6 @@ pub mod task {
 
         /// Exits the current task with the given exit code.
         pub fn ax_exit(exit_code: i32) -> !;
-    }
-
-    define_api! {
-        @cfg "multitask";
-
-        /// Returns the current task's ID.
-        pub fn ax_current_task_id() -> u64;
-        /// Spawns a new task with the given entry point and other arguments.
-        pub fn ax_spawn(
-            f: impl FnOnce() + Send + 'static,
-            name: alloc::string::String,
-            stack_size: usize
-        ) -> AxTaskHandle;
-        /// Waits for the given task to exit, and returns its exit code (the
-        /// argument of [`ax_exit`]).
-        pub fn ax_wait_for_exit(task: AxTaskHandle) -> Option<i32>;
-        /// Sets the priority of the current task.
-        pub fn ax_set_current_priority(prio: isize) -> crate::AxResult;
-
-        /// Blocks the current task and put it into the wait queue, until the
-        /// given condition becomes true, or the the given duration has elapsed
-        /// (if specified).
-        pub fn ax_wait_queue_wait(
-            wq: &AxWaitQueueHandle,
-            until_condition: impl Fn() -> bool,
-            timeout: Option<core::time::Duration>,
-        ) -> bool;
-        /// Wakes up one or more tasks in the wait queue.
-        ///
-        /// The maximum number of tasks to wake up is specified by `count`. If
-        /// `count` is `u32::MAX`, it will wake up all tasks in the wait queue.
-        pub fn ax_wait_queue_wake(wq: &AxWaitQueueHandle, count: u32);
     }
 }
 

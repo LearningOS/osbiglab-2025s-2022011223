@@ -40,9 +40,6 @@ pub extern "C" fn rust_main_secondary(cpu_id: usize) -> ! {
 
     axhal::platform_init_secondary();
 
-    #[cfg(feature = "multitask")]
-    axtask::init_scheduler_secondary();
-
     info!("Secondary CPU {:x} init OK.", cpu_id);
     super::INITED_CPUS.fetch_add(1, Ordering::Relaxed);
 
@@ -53,12 +50,9 @@ pub extern "C" fn rust_main_secondary(cpu_id: usize) -> ! {
     #[cfg(feature = "irq")]
     axhal::arch::enable_irqs();
 
-    #[cfg(all(feature = "tls", not(feature = "multitask")))]
+    #[cfg(feature = "tls")]
     super::init_tls();
 
-    #[cfg(feature = "multitask")]
-    axtask::run_idle();
-    #[cfg(not(feature = "multitask"))]
     loop {
         axhal::arch::wait_for_irqs();
     }

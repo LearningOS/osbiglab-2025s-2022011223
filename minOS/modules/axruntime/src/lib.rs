@@ -70,16 +70,7 @@ impl axlog::LogIf for LogIfImpl {
     }
 
     fn current_task_id() -> Option<u64> {
-        if is_init_ok() {
-            #[cfg(feature = "multitask")]
-            {
-                axtask::current_may_uninit().map(|curr| curr.id().as_u64())
-            }
-            #[cfg(not(feature = "multitask"))]
-            None
-        } else {
-            None
-        }
+        None
     }
 }
 
@@ -145,9 +136,6 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
     info!("Initialize platform devices...");
     axhal::platform_init();
 
-    #[cfg(feature = "multitask")]
-    axtask::init_scheduler();
-
     #[cfg(feature = "smp")]
     self::mp::start_secondary_cpus(cpu_id);
 
@@ -157,7 +145,7 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
         init_interrupt();
     }
 
-    #[cfg(all(feature = "tls", not(feature = "multitask")))]
+    #[cfg(feature = "tls")]
     {
         info!("Initialize thread local storage...");
         init_tls();
@@ -172,13 +160,8 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
 
     unsafe { main() };
 
-    #[cfg(feature = "multitask")]
-    axtask::exit(0);
-    #[cfg(not(feature = "multitask"))]
-    {
-        debug!("main task exited: exit_code={}", 0);
-        axhal::misc::terminate();
-    }
+    debug!("main task exited: exit_code={}", 0);
+    axhal::misc::terminate();
 }
 
 #[cfg(feature = "alloc")]
@@ -263,15 +246,13 @@ fn init_interrupt() {
 
     axhal::irq::register_handler(TIMER_IRQ_NUM, || {
         update_timer();
-        #[cfg(feature = "multitask")]
-        axtask::on_timer_tick();
     });
 
     // Enable IRQs before starting app
     axhal::arch::enable_irqs();
 }
 
-#[cfg(all(feature = "tls", not(feature = "multitask")))]
+#[cfg(feature = "tls")]
 fn init_tls() {
     let main_tls = axhal::tls::TlsArea::alloc();
     unsafe { axhal::arch::write_thread_pointer(main_tls.tls_ptr() as usize) };

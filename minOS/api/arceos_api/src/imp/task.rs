@@ -1,14 +1,8 @@
 pub fn ax_sleep_until(deadline: crate::time::AxTimeValue) {
-    #[cfg(feature = "multitask")]
-    axtask::sleep_until(deadline);
-    #[cfg(not(feature = "multitask"))]
     axhal::time::busy_wait_until(deadline);
 }
 
 pub fn ax_yield_now() {
-    #[cfg(feature = "multitask")]
-    axtask::yield_now();
-    #[cfg(not(feature = "multitask"))]
     if cfg!(feature = "irq") {
         axhal::arch::wait_for_irqs();
     } else {
@@ -17,9 +11,6 @@ pub fn ax_yield_now() {
 }
 
 pub fn ax_exit(_exit_code: i32) -> ! {
-    #[cfg(feature = "multitask")]
-    axtask::exit(_exit_code);
-    #[cfg(not(feature = "multitask"))]
     axhal::misc::terminate();
 }
 
