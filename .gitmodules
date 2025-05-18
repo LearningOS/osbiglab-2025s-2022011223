@@ -1,0 +1,3 @@
+[submodule "verified-memory-addr"]
+	path = verified-memory-addr
+	url = git@github.com:leverimmy/verified-memory-addr.git
