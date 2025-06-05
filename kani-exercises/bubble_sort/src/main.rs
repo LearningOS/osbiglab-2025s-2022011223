@@ -32,7 +32,7 @@ fn check_bubble_sort() {
     wrong_bubble_sort(&mut arr, length);
 
     for i in 1..length {
-        assert!(arr[i - 1] <= arr[i]);
+        kani::assert(arr[i - 1] <= arr[i], "Array is not sorted");
     }
 }
 
