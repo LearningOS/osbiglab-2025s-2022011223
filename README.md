@@ -29,7 +29,7 @@
 
 ### Kani
 
-为了探索操作系统形式化验证，我学习了针对 Rust 的形式化验证工具 Kani。Kani 能够通过对（在给定约束内的）所有可能输入进行符号执行，来数学上证明代码的某些性质，或找到违反这些性质的反例。
+Kani 能够通过对（在给定约束内的）所有可能输入进行符号执行，来数学上证明代码的某些性质，或找到违反这些性质的反例。
 
 - 我的学习过程记录在学习笔记中：[Kani 入门 | Clever\_Jimmy's Blog](https://leverimmy.top/2025/04/22/An-Introduction-to-Kani/)。
 - 作为一个入门练习，我使用 Kani 编写了对[冒泡排序算法](./kani-exercises/bubble_sort)正确性的证明，并成功让 Kani 找到了一个错误实现版本的反例。
@@ -41,7 +41,7 @@
 主要验证的性质包括：
 
 - **地址对齐与运算**：验证了 `align_up`、`align_down` 和 `is_aligned` 等对齐函数的正确性，确保它们总是返回小于等于或大于等于原地址的、满足对齐要求的最大/最小地址。
-- **地址范围 `AddrRange`**：验证了 `new` 的有效性（确保 `start <= end`），以及 `contains`、`overlaps` 等逻辑的正确性。
+- **地址范围 `AddrRange`**：验证了 `new`、`contains`、`overlaps` 等逻辑的正确性。
 - **页迭代器 `PageIter`**：验证了页迭代器在处理对齐和非对齐地址时的迭代逻辑、边界条件以及对无效页大小（非 2 的幂）的处理。
 
 通过 Kani 验证了 `memory_addr` crate 中的全部 55 个 Proof Harnesses，确保了其核心功能的正确性。
